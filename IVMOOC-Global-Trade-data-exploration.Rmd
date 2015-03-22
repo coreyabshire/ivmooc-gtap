@@ -1,0 +1,60 @@
+---
+title: "IVMOOC - Global Trade Visualisation Tool"
+author: "Ronny De Winter"
+date: "18 Mar 2015"
+output: html_document
+---
+
+This document descibes some explorations on the global trade data (data set tstrade.csv) as provided by the University on Indiana, for a Client Project "Global Trade Visualization Tool" of the Purdue University.
+
+Load the data:
+
+```{r load, cache=TRUE}
+tstrade <- read.csv("~/Desktop/IVMOOC/FinalProject/tstrade.csv")
+```
+
+Obtain basic data information:
+
+```{r explore}
+str(tstrade)
+unique(tstrade$YEAR)
+```
+
+There are 15 million observations of 5 variables, data on 57 trading commodities, 134 regions, from 1995 to 2009.
+This represents a full matrix across the 4 dimensions: 57 * 134 * 134 * 15 = 15352380
+
+**Question:** There are 2 REG variables, are these the exporting and importing regions (in that order)?  
+**Question:** What is the definition of the Value variable? export of TRAD_COMM from REG in USD, mUSD?
+
+```{r tstradeSummary, cache=TRUE}
+summary(tstrade)
+```
+
+There are 74 negative "Value" values, REG related:
+```{r negVal-REG}
+negVal = subset(tstrade, tstrade$Value < 0)
+subset(table(negVal$REG),table(negVal$REG)>0)
+```
+REG.1 related:
+```{r negVal-REG.1}
+subset(table(negVal$REG.1),table(negVal$REG.1)>0)
+```
+**Question:** Is this related to indirect (re-) trades? Do we have to include them in the visualizations?
+
+Distribution of the "Value" variable
+
+```{r ValueHist}
+hist(log(tstrade$Value))
+```
+
+2 main groups can be idenfied: very small values (< 1E-5) and larger values (> 1E-2).
+Let's assume that the very small values are placeholders for zero or not available (NA) data and remove these form the dataset. We also ignore the negative values from now.
+
+```{r removeNA, cache=TRUE}
+# The theeshold of 3 is possible to be increased to get a smaller more relevant dataset 
+tstrade2 = subset(tstrade, tstrade$Value > 3)
+nrow(tstrade2)
+summary(tstrade2$Value)
+boxplot(tstrade2$Value)
+hist(log(log(tstrade2$Value)))
+```
