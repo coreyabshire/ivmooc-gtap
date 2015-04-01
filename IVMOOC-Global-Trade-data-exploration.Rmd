@@ -10,14 +10,16 @@ This document descibes some explorations on the global trade data (data set tstr
 Load the data:
 
 ```{r load, cache=TRUE}
-tstrade <- read.csv("~/Desktop/IVMOOC/FinalProject/tstrade.csv")
+trade <- read.csv("~/Desktop/IVMOOC/FinalProject/tstrade.csv", header=TRUE, 
+                    col.names=c("comm","exp","imp","year","value"),
+                    colClasses=c("factor","factor","factor","factor","numeric"))
 ```
 
 Obtain basic data information:
 
 ```{r explore}
-str(tstrade)
-unique(tstrade$YEAR)
+str(trade)
+unique(trade$YEAR)
 ```
 
 There are 15 million observations of 5 variables, data on 57 trading commodities, 134 regions, from 1995 to 2009.
@@ -26,13 +28,13 @@ This represents a full matrix across the 4 dimensions: 57 * 134 * 134 * 15 = 153
 **Question:** There are 2 REG variables, are these the exporting and importing regions (in that order)?  
 **Question:** What is the definition of the Value variable? export of TRAD_COMM from REG in USD, mUSD?
 
-```{r tstradeSummary, cache=TRUE}
-summary(tstrade)
+```{r tradeSummary, cache=TRUE}
+summary(trade)
 ```
 
 There are 74 negative "Value" values, REG related:
 ```{r negVal-REG}
-negVal = subset(tstrade, tstrade$Value < 0)
+negVal = subset(trade, trade$Value < 0)
 subset(table(negVal$REG),table(negVal$REG)>0)
 ```
 REG.1 related:
@@ -44,7 +46,7 @@ subset(table(negVal$REG.1),table(negVal$REG.1)>0)
 Distribution of the "Value" variable
 
 ```{r ValueHist}
-hist(log(tstrade$Value))
+hist(log(trade$value))
 ```
 
 2 main groups can be idenfied: very small values (< 1E-5) and larger values (> 1E-2).
@@ -52,9 +54,9 @@ Let's assume that the very small values are placeholders for zero or not availab
 
 ```{r removeNA, cache=TRUE}
 # The theeshold of 3 is possible to be increased to get a smaller more relevant dataset 
-tstrade2 = subset(tstrade, tstrade$Value > 3)
-nrow(tstrade2)
-summary(tstrade2$Value)
-boxplot(tstrade2$Value)
-hist(log(log(tstrade2$Value)))
+trade2 = subset(trade, trade$value > 3)
+nrow(trade2)
+summary(trade2$value)
+boxplot(trade2$value)
+hist(log(log(trade2$value)))
 ```
