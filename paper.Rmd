@@ -1,0 +1,45 @@
+---
+title: "Global Trade Visualization Tool"
+author: "Corey Abshire, Asimansu Bera, Ronny de Winter"
+date: "Saturday, March 21, 2015"
+output:
+  html_document: default
+---
+
+# Introduction
+
+Description of visualization goal/need, hand-sketch of the envisioned visualization, and discussion.
+
+## User Needs and Task Analysis
+
+## Envisioned Visualization
+
+## Project Improtance
+
+# Related Work
+
+# Statistical Analysis
+
+# Visualization Analysis and Results
+
+# Key Insights
+
+# Validation Problems and Redesign
+
+# Challenges and Opportunities
+
+# Acknowledgements
+
+# References
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
