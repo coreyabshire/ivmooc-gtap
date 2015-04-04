@@ -1,15 +1,16 @@
 # Enrich the basic trade data with derivative data:
 #
-#  1.  Sum Export per Exporting Region per Year
-#  2.  Sum Total Export over full period per Region
-#  3.  Sum Import per Improting Region per Year
-#  4.  Sum Total Import over full period per Region
-#  5.  Sum total Trade for a commodity per Year
-#  6.  Sum total Trade per Commodity over full period
-#  7.  Create tradeplus dataset with added variables
+#  1. Sum Export per Exporting Region per Year
+#  2. Sum Total Export over full period per Region
+#  3. Sum Import per Improting Region per Year
+#  4. Sum Total Import over full period per Region
+#  5. Sum total Trade for a commodity per Year
+#  6. Sum total Trade per Commodity over full period
+#  7. Create tradeplus dataset with added variables
 #       - market: market share for an exporting region for a commodity in a year
 #       - weigth: export of commodity vs full export of that region in that year
-#  8.  Top exported commmodities for a region
+#  8. Top exported commmodities for a region
+#  9. Top partners for exporting region
 
 library(dplyr)
 load("trade.clean")
@@ -80,3 +81,19 @@ topTrades <- function(region, number = 5) {
 
 topTrades("pol")
 topTrades("bel", 7)
+
+# 9. Top partners for exporting region
+
+topPartners <- function(region, number = 5) {
+  t = tradeplus %>% 
+    filter(exp == region) %>%
+    group_by(imp) %>%
+    summarise(commval = sum(value)) %>%
+    arrange(desc(commval))
+  totExport = sum(t$commval)
+  t$weight = t$commval / totExport
+  t[1:number,][[1]]
+}
+
+topPartners("usa")
+topPartners("bel", 10)
