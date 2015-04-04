@@ -25,3 +25,14 @@ byExp <- trade %>%
 qplot(year, commval, data = byExp, color = exp) + geom_line()
 
 qplot(year, commval, data = byExp, facets = . ~ exp) + geom_line()
+
+# Export for a specific region for main commodities (example: Poland (pol))
+byExpX <- trade %>%
+  filter(exp == "pol") %>%
+  group_by(comm, year) %>%
+  summarise(commval = sum(value)) %>%
+  arrange(commval) %>%
+  filter(commval > 1000)
+
+qplot(year, commval, data = byExpX, facets = . ~ comm) + geom_line() + ggtitle("Export by Poland (joined EU in 2004)")
+  
