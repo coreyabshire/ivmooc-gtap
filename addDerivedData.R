@@ -67,7 +67,7 @@ save(tradeplus, file="trade.plus")
 
 # 8.  Top exported commodities for a region
 
-topTrades <- function(region, threshold = 0.05) {
+topTrades <- function(region, number = 5) {
   t = tradeplus %>% 
     filter(exp == region) %>%
     group_by(comm) %>%
@@ -75,8 +75,8 @@ topTrades <- function(region, threshold = 0.05) {
     arrange(desc(commval))
   totExport = sum(t$commval)
   t$weight = t$commval / totExport
-  t[t$weight > threshold,]
+  t[1:number,][[1]]
 }
 
 topTrades("pol")
-topTrades("bel", 0.02)
+topTrades("bel", 7)
