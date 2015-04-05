@@ -32,7 +32,7 @@ byExpX <- trade %>%
   group_by(comm, year) %>%
   summarise(commval = sum(value)) %>%
   arrange(commval) %>%
-  filter(commval > 1000)
+  filter(comm %in% topTrades("pol", 10))
 
 qplot(year, commval, data = byExpX, facets = . ~ comm) + geom_line() + ggtitle("Export by Poland (joined EU in 2004)")
   
