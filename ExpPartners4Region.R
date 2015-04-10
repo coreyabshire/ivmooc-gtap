@@ -1,7 +1,7 @@
 library(ggplot2)
 library(dplyr)
 
-load(trade.plus)
+load("trade.plus")
 
 exportPartners4region <- function(region, partners = topPartners(region)) {
   reg = tradeplus %>% 
