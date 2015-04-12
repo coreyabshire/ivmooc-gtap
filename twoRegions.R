@@ -14,3 +14,17 @@ twoRegions <- function(region1, region2) {
 }
 
 twoRegions("chn", "usa")
+
+# Export for 2 region2 and main commodities (example: China (chn) and usa)
+twoRegionsMainCommodities <- function(region1, region2) {
+  byExpX <- trade %>%
+    filter(exp == region1 | exp == region2) %>%
+    filter(comm %in% topTrades(region2, 10)) %>%
+    group_by(comm, year, exp) %>%
+    summarise(commval = sum(value)) %>%
+    arrange(commval)
+  qplot(year, commval, data = byExpX, facets = . ~ comm, col = exp, geom = "line") + 
+    ggtitle(paste("Export of Main Commodities by", region1, "and", region2))
+}
+
+twoRegionsMainCommodities("chn", "usa")
