@@ -13,4 +13,6 @@ exportPartners4region <- function(region, partners = topPartners(region)) {
     ggtitle(paste("export partners for ", region))
 }
 
+exportPartners4region("chn")
 exportPartners4region("usa")
+
