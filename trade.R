@@ -2,6 +2,9 @@ library(plyr)
 library(ggplot2)
 library(igraph)
 library(choroplethr)
+library(reshape2)
+library(portfolio)
+library(treemap)
 
 trade <- read.csv("../tstrade.csv", header=TRUE, 
                     col.names=c("comm","exp","imp","year","value"),
@@ -17,8 +20,9 @@ load("../trade.Rdata")
 
 trade95 <- subset(trade, year=1995)
 
-sumval <- function(x) 
-    data.frame(list(value=sum(x$value)))
+
+sumival <- function(x) 
+  data.frame(list(ivalue=sum(x$ivalue)))
 
 trade95regs <- ddply(trade95, .(exp, imp), sumval)
 
@@ -114,9 +118,103 @@ trade.mexp <- ddply(trade, .(exp, comm, year), sumval)
 trade.mexp <- merge(trade.mexp, trade.expyear, by=c("exp", "year"))
 trade.mexp$exprat <- trade.mexp$value / trade.mexp$expval
 
+# would be of interest
 ggplot(subset(trade.mexp, exp=="usa")) +
   geom_bar(aes(x=year, y=exprat, fill=comm), stat="identity", position="stack")
 
-ggplot(subset(trade.mexp, exp=="usa")) +
+ggplot(subset(trade.mexp, exp=="ind")) +
   geom_bar(aes(x=year, y=exprat, fill=comm), stat="identity") +
   facet_grid(. ~ comm)
+
+trade.year <- ddply(trade, .(year), "nrow")
+
+trade.exp <- ddply(trade, .(exp), "nrow")
+
+trade.imp <- ddply(trade, .(imp), "nrow")
+
+ggplot(trade.year) + 
+  geom_line(aes(x=year, y=nrow))
+
+# load the metadata
+
+# load the price indices
+index <- read.csv('../index.csv')[1:19,1:4]
+str(index)
+index
+save(index, file="index.Rdata")
+load("index.Rdata")
+
+# adjust values by index
+trade <- merge(trade, index)
+str(trade)
+trade$ivalue <- trade$value / trade$multiplier
+
+sumvalues <- function(x) 
+  data.frame(list(
+    value  = sum(x$value),
+    ivalue = sum(x$ivalue)))
+
+us.annual <- ddply(subset(trade, exp=="usa"), .(year), sumvalues)
+str(us.annual)
+    
+us.annual.melt <- melt(us.annual, id.vars=c("year"))
+
+ggplot(us.annual.melt) +
+  geom_line(aes(x=year, y=value, col=variable))
+
+annual <- melt(ddply(trade, .(year), sumvalues), id.vars=c("year"))
+str(annual)
+
+ggplot(annual) +
+  geom_line(aes(x=year, y=value, col=variable))
+
+annual.c <- ddply(trade, .(year, exp), sumival)
+str(annual.c)
+
+ggplot(annual.c) +
+  geom_line(aes(x=year, y=ivalue, col=exp))
+
+annual.c <- merge(annual.c, subset)
+annual.c.div <- subset(annual.c, year==1995)[,c("exp","ivalue")]
+colnames(annual.c.div) <- c("exp", "ivalue95")
+str(annual.c.div)
+annual.c <- merge(annual.c, annual.c.div)
+str(annual.c)
+annual.c$perc <- annual.c$ivalue / annual.c$ivalue95
+
+ggplot(annual.c) +
+  geom_line(aes(x=year, y=perc, col=exp))
+
+head(annual.c[order(annual.c$perc, decreasing=T),])
+
+annual.c.naze <- subset(annual.c, exp != "aze")
+ggplot(annual.c.naze) +
+  geom_line(aes(x=year, y=perc, col=exp))
+
+head(annual.c.naze[order(annual.c.naze$perc, decreasing=T),])
+
+
+
+# get some GDP data
+
+# try making a treemap, since it seems to be popular here
+# following along with: http://flowingdata.com/2010/02/11/an-easy-way-to-make-a-treemap/
+map.market(id=annual.c$year, area=annual.c$ivalue, group=annual.c$exp, color=annual.c$ivalue, main="Economics Map")
+
+df <- ddply(subset(trade, year==2005), .(exp, imp), sumival)
+map.market(id=df$exp, area=df$ivalue, group=df$imp, color=df$ivalue, main="Economics Map")
+
+treemap(df, c("exp","imp"), "ivalue")
+treemap(df, c("exp"), "ivalue")
+treemap(trade, c("comm"), "ivalue")
+treemap(subset(trade, year==1995), c("comm"), "ivalue")
+treemap(subset(trade, year==2005), c("comm"), "ivalue")
+treemap(subset(trade, year==2005), c("comm","exp"), "ivalue")
+
+for (y in 1995:2009) {
+  fn = paste0("images/treemap_comm_ivalue_", y, ".png")
+  png(filename=fn, width=1280, height=720, units="px")
+  treemap(subset(trade, year==y), c("comm"), "ivalue")
+  dev.off()
+}
+
