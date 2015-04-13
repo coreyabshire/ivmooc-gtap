@@ -1,4 +1,6 @@
 ---
+
+
 title: "IVMOOC - Global Trade Visualisation Tool"
 author: "Ronny De Winter"
 date: "18 Mar 2015"
@@ -10,7 +12,7 @@ This document descibes some explorations on the global trade data (data set tstr
 Load the data:
 
 ```{r load, cache=TRUE}
-tstrade <- read.csv("~/Desktop/IVMOOC/FinalProject/tstrade.csv")
+tstrade <- read.csv("../tstrade.csv")
 ```
 
 Obtain basic data information:
