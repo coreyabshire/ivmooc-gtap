@@ -35,6 +35,7 @@ twoRegionsMainCommodities <- function(region1, region2, comms) {
     ggtitle(paste("Export Top Traded Commodities by", region1, "and", region2)) +
     theme(plot.title=element_text(face="bold", size=25), 
           axis.text = element_text(size=15),
+          strip.text = element_text(size=13),
           axis.title = element_text(size=20),
           legend.position="none")   
 }
