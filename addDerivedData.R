@@ -11,6 +11,7 @@
 #       - weigth: export of commodity vs full export of that region in that year
 #  8. Top exported commmodities for a region
 #  9. Top partners for exporting region
+# 10. Sectors - longer description for commodities
 
 library(dplyr)
 load("trade.clean")
@@ -97,3 +98,7 @@ topPartners <- function(region, number = 5) {
 
 topPartners("usa")
 topPartners("bel", 10)
+
+# 10 Sectors - long names for commdities
+sectors <- read.csv("~/Desktop/IVMOOC/FinalProject/sectors.csv")
+sectors$Code = tolower(sectors$Code)
