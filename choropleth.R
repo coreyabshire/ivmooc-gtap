@@ -2,6 +2,8 @@ library(choroplethr)
 library(choroplethrAdmin1)
 library(choroplethrMaps)
 library(WDI)
+library(rworldmap)
+require(maptools)
 
 ## Not run:
 # See http://data.worldbank.org/indicator/SP.POP.TOTL
@@ -11,8 +13,6 @@ choroplethr_wdi(code="SP.DYN.LE00.IN", year=2012, title="2012 Life Expectancy Es
 # See http://data.worldbank.org/indicator/NY.GDP.PCAP.CD
 choroplethr_wdi(code="NY.GDP.PCAP.CD", year=2012, title="2012 Per Capita Income")
 ## End(Not run)
-
-library(rworldmap)
 
 data(countryExData)
 sPDF <- joinCountryData2Map(countryExData, joinCode="ISO3", nameJoinColumn="ISO3V10")
@@ -24,7 +24,7 @@ mapCountryData(sPDF, nameColumnToPlot="expval")
 
 str(subset(trade.expyear, year==1995))
 
-countries <- read.csv("countries.csv")
+countries <- read.csv("../countries.csv")
 
 trade.expyear2000 <- subset(trade.expyear, year==2000)
 trade.exp2000 <- merge(countries, trade.expyear2000, by.x="gtapcode", by.y="exp", all.x=T)
@@ -37,12 +37,13 @@ trade.exp2000.spdf <- joinCountryData2Map(trade.exp2000, joinCode="ISO_A3", name
 mapCountryData(trade.exp2000.spdf, nameColumnToPlot="adjvallog")
 
 
+
+
 s <- map_data("world")
 m <- ggplot(s, aes(x=long, y=lat, group=group)) + geom_polygon(fill="green", colour="black")
 m
 
 
-require(maptools)
 data(wrld_simpl)
 plot(wrld_simpl)
 
@@ -72,3 +73,20 @@ qplot(
   facet_wrap( ~ g1 + g2 )
 
 
+
+
+
+trade.exp1995 <- merge(countries, trade.expyear1995, by.x="gtapcode", by.y="exp", all.x=T)
+trade.exp1995.spdf <- joinCountryData2Map(trade.exp1995, joinCode="ISO3", nameJoinColumn="iso3code")
+mapCountryData(trade.exp1995.spdf, nameColumnToPlot="expval")
+mapCountryData(trade.exp1995.spdf, nameColumnToPlot="adjval")
+trade.exp1995$adjvallog <- log(trade.exp1995$adjval)
+trade.exp1995.spdf <- joinCountryData2Map(trade.exp1995, joinCode="ISO_A3", nameJoinColumn="iso3code")
+
+
+trade.exp2009 <- merge(countries, trade.expyear2009, by.x="gtapcode", by.y="exp", all.x=T)
+trade.exp2009.spdf <- joinCountryData2Map(trade.exp2009, joinCode="ISO3", nameJoinColumn="iso3code")
+mapCountryData(trade.exp2009.spdf, nameColumnToPlot="expval")
+mapCountryData(trade.exp2009.spdf, nameColumnToPlot="adjval")
+trade.exp2009$adjvallog <- log(trade.exp2009$adjval)
+trade.exp2009.spdf <- joinCountryData2Map(trade.exp2009, joinCode="ISO_A3", nameJoinColumn="iso3code")
